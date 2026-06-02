@@ -10,12 +10,15 @@ public class HeaderPanel extends JPanel {
         setPreferredSize(new Dimension(1000, 80));
         setLayout(new BorderLayout());
 
-        JLabel titleLabel = new JLabel("  Smart Queue Management System  ");
+        String orgName = ConfigService.getInstance().getOrgName();
+        String orgTagline = ConfigService.getInstance().getOrgTagline();
+
+        JLabel titleLabel = new JLabel("  " + orgName + "  ");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 0));
 
-        JLabel tagline = new JLabel("Take a number • Wait • Be served  ");
+        JLabel tagline = new JLabel(orgTagline + "  ");
         tagline.setFont(new Font("Segoe UI", Font.PLAIN, 18));
         tagline.setForeground(new Color(220, 230, 250));
         tagline.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 30));

@@ -19,10 +19,10 @@ public class DisplayPanel extends JPanel {
         setBackground(new Color(20, 30, 45));
         setLayout(new BorderLayout());
 
-        // NOW SERVING TOP
+        // Now Serving top
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         topPanel.setOpaque(false);
-        JLabel servingLabel = new JLabel("NOW SERVING");
+        JLabel servingLabel = new JLabel("Now Serving");
         servingLabel.setFont(new Font("Segoe UI", Font.BOLD, 64));
         servingLabel.setForeground(new Color(100, 255, 150));
         topPanel.add(servingLabel);
@@ -39,7 +39,7 @@ public class DisplayPanel extends JPanel {
         listsContainer.setOpaque(false);
 
         // Waiting LEFT
-        JPanel waitingPanel = createListPanel("CURRENT WAITING");
+        JPanel waitingPanel = createListPanel("Current Waiting");
         waitingModel = new DefaultListModel<>();
         waitingList = new JList<>(waitingModel);
         styleList(waitingList);
@@ -47,7 +47,7 @@ public class DisplayPanel extends JPanel {
         listsContainer.add(waitingPanel);
 
         // Next Batch RIGHT
-        JPanel nextPanel = createListPanel("NEXT BATCH");
+        JPanel nextPanel = createListPanel("Next Batch");
         nextModel = new DefaultListModel<>();
         nextList = new JList<>(nextModel);
         styleList(nextList);
@@ -87,7 +87,7 @@ public class DisplayPanel extends JPanel {
     private void refreshData() {
         QueueService service = QueueService.getInstance();
         if (!service.isConnected()) {
-            numberDisplay.setText("DB OFFLINE");
+            numberDisplay.setText("Database Offline");
             numberDisplay.setForeground(Color.RED);
             waitingModel.clear();
             nextModel.clear();

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Queue History - Smart Queue v4.0</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -58,12 +59,16 @@
                 tbody.innerHTML = '';
                 
                 (data.data || []).forEach(row => {
+                    const num = row.num ?? row[0] ?? '';
+                    const generated = row.gen ?? row[1] ?? '-';
+                    const called = row.called ?? row[2] ?? '-';
+                    const status = String(row.status ?? row[3] ?? '').toLowerCase();
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
-                        <td><strong>${row[0]}</strong></td>
-                        <td>${row[1]}</td>
-                        <td>${row[2] || '-'}</td>
-                        <td><span class="status-badge status-${row[3]}">${row[3].toUpperCase()}</span></td>
+                        <td><strong>${escapeHtml(num)}</strong></td>
+                        <td>${escapeHtml(generated)}</td>
+                        <td>${escapeHtml(called)}</td>
+                        <td><span class="status-badge status-${status}">${escapeHtml(status.toUpperCase())}</span></td>
                     `;
                     tbody.appendChild(tr);
                 });

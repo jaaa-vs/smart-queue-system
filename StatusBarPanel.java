@@ -29,7 +29,7 @@ public class StatusBarPanel extends JPanel {
         try {
             var service = QueueService.getInstance();
             if (!service.isConnected()) {
-                statusLabel.setText("❌ DB Offline");
+                statusLabel.setText("DB Offline");
                 statusLabel.setForeground(new Color(200, 70, 70));
                 return;
             }
@@ -39,10 +39,10 @@ public class StatusBarPanel extends JPanel {
             int nextBatch = stats.getOrDefault("nextBatch", 0);
             int served = stats.getOrDefault("servedToday", 0);
 
-            statusLabel.setText(String.format("✅ Live | Waiting: %d | Next Batch: %d | Served today: %d", waiting, nextBatch, served));
+            statusLabel.setText(String.format("Live | Waiting: %d | Next Batch: %d | Served today: %d", waiting, nextBatch, served));
             statusLabel.setForeground(new Color(40, 120, 70));
         } catch (Exception ex) {
-            statusLabel.setText("❌ Error: " + ex.getMessage());
+            statusLabel.setText("Error: " + ex.getMessage());
             statusLabel.setForeground(new Color(200, 70, 70));
         }
     }

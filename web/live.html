@@ -3,6 +3,7 @@
 <head>
     <title>Live Queue - Smart Queue</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -34,10 +35,10 @@
     <script src="app.js"></script>
     <script>
         let refreshTimer;
-        checkStatus && checkStatus();
-        refreshLive && refreshLive();
+        if (typeof checkStatus === 'function') checkStatus();
+        if (typeof refreshLive === 'function') refreshLive();
         refreshTimer = setInterval(() => {
-            refreshLive && refreshLive();
+            if (typeof refreshLive === 'function') refreshLive();
         }, 3000);
         
         document.getElementById('serve-btn').disabled = true;

@@ -1,0 +1,15 @@
+<div id="config-modal" class="modal-overlay" style="display:none;">
+    <div class="modal-container">
+        <h3>⚙️ System Configuration Required</h3>
+        <p>No configuration found. Complete setup to enable full queue management:</p>
+        <ul>
+            <li>Organization details</li>
+            <li>Services (PAY, REG, etc.)</li>
+            <li>Windows/ counters</li>
+        </ul>
+        <div class="modal-actions">
+            <button class="btn btn-primary" onclick="loadConfig(); document.getElementById('config-modal').style.display='none'">Go to Settings Tab →</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('config-modal').style.display='none'">Skip (limited mode)</button>
+        </div>
+    </div>
+</div>

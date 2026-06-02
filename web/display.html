@@ -2,152 +2,535 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Smart Queue Display</title>
-<link rel="manifest" href="manifest.json">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#10b981">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Queue Display</title>
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { 
-            height: 100%; 
-            overflow: hidden; 
-            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 50%, #3a3a4e 100%);
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            touch-action: manipulation;
+
+        :root {
+            --bg-deep: #041018;
+            --bg-soft: #0b1d2b;
+            --accent: #0ea5e9;
+            --accent2: #14b8a6;
+            --warning: #f59e0b;
+            --text: #f4fbff;
+            --muted: #9cb4c1;
+            --card: rgba(10, 26, 38, 0.7);
+            --line: rgba(143, 191, 214, 0.25);
         }
-        .container {
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            color: var(--text);
+            font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+            background:
+                radial-gradient(circle at 14% 16%, rgba(20,184,166,0.25), transparent 30%),
+                radial-gradient(circle at 84% 10%, rgba(14,165,233,0.24), transparent 26%),
+                linear-gradient(155deg, var(--bg-deep) 0%, var(--bg-soft) 100%);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image: linear-gradient(rgba(156,180,193,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(156,180,193,0.06) 1px, transparent 1px);
+            background-size: 48px 48px;
+            mask-image: radial-gradient(circle at center, black 32%, transparent 78%);
+            z-index: 0;
+        }
+
+        .screen {
+            position: relative;
+            z-index: 1;
             height: 100vh;
+            display: grid;
+            grid-template-rows: auto auto 1fr auto;
+            gap: 1.2vmin;
+            padding: 1.4vmin 2vmin 1.4vmin;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 0.8rem 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .org {
+            font-size: clamp(1rem, 2.1vw, 1.8rem);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .top-meta {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            color: var(--muted);
+            font-size: clamp(0.9rem, 1.7vw, 1.25rem);
+            font-weight: 600;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0.7rem rgba(34,197,94,0.7);
+            animation: pulse 1.6s infinite;
+        }
+
+        .hero {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 1.2vmin 2vmin;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 1rem;
+            min-height: 29vh;
+            backdrop-filter: blur(12px);
+        }
+
+        .hero-left {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2vmin;
-            gap: 1.5vmin;
-            position: relative;
+            gap: 0.4rem;
         }
-        .now-serving {
-            font-size: clamp(1.5rem, 3.5vw, 2.5rem);
-            font-weight: 700;
-            color: #10b981;
-            letter-spacing: 0.05em;
-            text-align: center;
+
+        .label {
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            letter-spacing: 0.08em;
             text-transform: uppercase;
-            margin-bottom: 0.5vmin;
-            text-shadow: 0 1px 5px rgba(16, 185, 129, 0.3);
-        }
-        .main-number {
-            font-size: clamp(8rem, 20vw, 28vw);
+            color: var(--accent2);
             font-weight: 800;
+        }
+
+        .now-number {
+            font-size: clamp(4rem, 11vw, 11rem);
+            font-weight: 900;
             line-height: 0.95;
-            text-align: center;
-            padding: 1.5vmin 3vmin;
-            background: rgba(255,255,255,0.08);
-            border-radius: 1.5rem;
-            backdrop-filter: blur(15px);
-            border: 0.15rem solid rgba(255,255,255,0.15);
-            box-shadow: 0 1.5rem 3rem rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
-            margin: 0 auto;
-            transition: all 0.4s ease;
-            min-height: 15vh;
+            letter-spacing: 0.03em;
+            text-shadow: 0 0 28px rgba(20,184,166,0.35);
+            overflow-wrap: anywhere;
+        }
+
+        .now-meta {
+            font-size: clamp(1rem, 2vw, 1.6rem);
+            color: var(--muted);
+            font-weight: 700;
+        }
+
+        .hero-right {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            align-items: flex-end;
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.05);
+            padding: 0.4rem 0.9rem;
+            font-size: clamp(0.9rem, 1.7vw, 1.15rem);
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.1vmin;
+            min-height: 0;
+        }
+
+        .panel {
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            backdrop-filter: blur(12px);
+        }
+
+        .panel-title {
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 0.6rem;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            font-weight: 800;
+            color: #dff7ff;
+            margin-bottom: 0.7rem;
         }
-        .main-number.active {
-            background: rgba(16,185,129,0.12);
-            border-color: rgba(16,185,129,0.4);
-            color: #10b981;
-            box-shadow: 0 0 2rem rgba(16,185,129,0.3), 0 1.5rem 3rem rgba(0,0,0,0.4);
-        }
-        .lists { 
-            display: flex; 
-            width: clamp(70vw, 85vw, 90vw); 
-            gap: 1.5vmin; 
-            justify-content: center; 
-            flex-wrap: wrap; 
-            margin-top: 1.5vmin;
-        }
-        .panel {
-            flex: 1 1 30vmin; min-width: 22vmin; background: rgba(30, 30, 60, 0.7);
-            padding: 2vmin; border-radius: 1.2rem; backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 1rem 2rem rgba(0,0,0,0.3);
-            height: 28vmin; display: flex; flex-direction: column;
-        }
-        .panel-title {
-            font-size: clamp(1.2rem, 3vw, 1.8rem); font-weight: 600; text-align: center;
-            margin-bottom: 1.5vmin; color: white; opacity: 0.9; letter-spacing: 0.03em;
-        }
+
         .panel-list {
-            flex: 1; list-style: none; overflow-y: auto; padding-right: 0.3vmin;
-            font-size: clamp(1.4rem, 4vw, 2.2rem); font-weight: 600; line-height: 1.2;
+            list-style: none;
+            overflow-y: auto;
+            display: grid;
+            gap: 0.45rem;
         }
+
         .panel-list li {
-            padding: 0.8vmin 1.2vmin; margin-bottom: 0.8vmin; background: rgba(255,255,255,0.08);
-            border-radius: 0.8rem; border-left: 0.3rem solid #10b981; backdrop-filter: blur(10px);
-            transition: all 0.2s ease;
+            border: 1px solid var(--line);
+            border-left: 4px solid var(--accent);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.05);
+            padding: 0.55rem 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+            font-size: clamp(1rem, 2.3vw, 1.55rem);
+            font-weight: 800;
         }
-        .panel-list li:nth-child(even) { border-left-color: #3b82f6; background: rgba(59,130,246,0.12); }
-        .status {
-            position: absolute; bottom: 1.5vmin; left: 50%; transform: translateX(-50%);
-            font-size: clamp(0.9rem, 2vw, 1.2rem); color: rgba(255,255,255,0.6);
-            background: rgba(0,0,0,0.3); padding: 0.8vmin 1.5vmin; border-radius: 1.5rem;
-            backdrop-filter: blur(10px); white-space: nowrap;
+
+        .meta-small {
+            font-size: clamp(0.78rem, 1.2vw, 1rem);
+            color: var(--muted);
+            font-weight: 600;
         }
-        @media (max-width: 768px) { .lists { flex-direction: column; width: 92vw; gap: 1vmin; } .panel { height: 25vmin; } }
-        @media (max-height: 700px) { .container { gap: 1vmin; padding: 1vmin; } .panel { height: 24vmin; } }
+
+        .eta {
+            color: #e9f7ff;
+            font-size: clamp(0.75rem, 1.1vw, 0.95rem);
+            border: 1px solid rgba(148,188,208,0.4);
+            border-radius: 999px;
+            padding: 0.2rem 0.5rem;
+        }
+
+        .footer {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: center;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 0.7rem 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .coach {
+            font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+            color: #d8f4ff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .counts {
+            font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+            color: var(--muted);
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .offline {
+            color: #f87171 !important;
+            text-shadow: none;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.18); opacity: 0.7; }
+        }
+
+        @media (max-width: 900px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+
+            .hero-right {
+                align-items: flex-start;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .board {
+                grid-template-columns: 1fr;
+            }
+
+            .footer {
+                grid-template-columns: 1fr;
+                gap: 0.45rem;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="now-serving" id="now-serving">NOW SERVING</div>
-        <div class="main-number" id="main-number">-</div>
-        <div class="lists">
-            <div class="panel">
-                <div class="panel-title">CURRENT WAITING</div>
-                <ul class="panel-list" id="waiting-list"></ul>
-            </div>
-            <div class="panel">
-                <div class="panel-title">NEXT BATCH</div>
-                <ul class="panel-list" id="next-list"></ul>
-            </div>
+    <div id="enable-audio-overlay" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:9999;pointer-events:auto;">
+        <div style="background:rgba(2,6,23,0.85);color:var(--text);padding:1.6rem;border-radius:12px;border:1px solid rgba(255,255,255,0.06);text-align:center;backdrop-filter:blur(6px)">
+            <div style="font-size:1.1rem;margin-bottom:0.6rem">Enable audio for announcements</div>
+            <button id="enable-audio-btn" onclick="enableAudioGesture()" style="background:var(--accent);color:#022;border:none;padding:0.6rem 1rem;border-radius:8px;font-weight:700;cursor:pointer">Enable Audio</button>
+            <div style="margin-top:0.6rem;font-size:0.85rem;color:var(--muted)">You can also press <strong>V</strong> to toggle voice.</div>
         </div>
     </div>
-    <div class="status">
-        <span id="status-time"></span> | <span id="waiting-num">0</span> waiting | <span id="next-num">0</span> next
-    </div>
+    <main class="screen">
+        <header class="topbar">
+            <div class="org" id="org-name">Smart Queue</div>
+            <div class="top-meta">
+                <span class="dot" id="status-dot"></span>
+                <span id="clock">--:--</span>
+            </div>
+        </header>
+
+        <section class="hero">
+            <div class="hero-left">
+                <div class="label">Now Serving</div>
+                <div id="main-number" class="now-number">-</div>
+                <div id="now-meta" class="now-meta">Waiting for next call</div>
+            </div>
+            <div class="hero-right">
+                <div class="pill" id="voice-state">Voice: On</div>
+                <div class="pill" id="waiting-pill">Waiting 0</div>
+                <div class="pill" id="next-pill">Next 0</div>
+            </div>
+        </section>
+
+        <section class="board">
+            <article class="panel">
+                <div class="panel-title"><i class="fas fa-users"></i> Current Waiting</div>
+                <ul id="waiting-list" class="panel-list"></ul>
+            </article>
+            <article class="panel">
+                <div class="panel-title"><i class="fas fa-forward"></i> Next Batch</div>
+                <ul id="next-list" class="panel-list"></ul>
+            </article>
+        </section>
+
+        <footer class="footer">
+            <div class="coach" id="coach-reco">Queue Insights: Monitoring flow...</div>
+            <div class="counts" id="windows-info">No windows configured yet</div>
+        </footer>
+    </main>
+
     <script>
+        let configData = null;
+        let previousCalled = "";
+        let voiceEnabled = true;
+        // Shared AudioContext to satisfy browser user-gesture requirements
+        let audioCtx = null;
+
+        function escapeHtml(text) {
+            if (!text) return "";
+            const div = document.createElement("div");
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function updateClock() {
+            document.getElementById("clock").textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        }
+
+        function playChime() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                // try to resume in case it's suspended
+                if (audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = "sine";
+                osc.frequency.setValueAtTime(740, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.25, audioCtx.currentTime + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.45);
+                osc.connect(gain).connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.45);
+            } catch (e) {
+                console.log("Chime unavailable", e);
+            }
+        }
+
+        function speakNowServing(num, windowNum, serviceCode) {
+            if (!voiceEnabled || !("speechSynthesis" in window) || !num || num === "-") return;
+            const utterance = new SpeechSynthesisUtterance(
+                `Now serving ${num}. Window ${windowNum || ""}. ${serviceCode || ""}`
+            );
+            utterance.rate = 0.96;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // Called by user gesture to unlock audio on restrictive browsers
+        function enableAudioGesture() {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                audioCtx.resume().catch(() => {});
+            } catch (e) {
+                console.log('AudioContext create failed', e);
+            }
+
+            // Trigger a short chime and a test announcement to ensure speech plays
+            voiceEnabled = true;
+            document.getElementById("voice-state").textContent = `Voice: ${voiceEnabled ? "On" : "Off"}`;
+            playChime();
+            // Speak a short test phrase
+            if ("speechSynthesis" in window) {
+                try {
+                    window.speechSynthesis.cancel();
+                    const t = new SpeechSynthesisUtterance('Audio enabled. Now serving test.');
+                    t.rate = 0.96; t.pitch = 1; t.volume = 1;
+                    window.speechSynthesis.speak(t);
+                } catch (e) {
+                    console.log('speech test failed', e);
+                }
+            }
+
+            // Hide the enable overlay if present
+            const overlay = document.getElementById('enable-audio-overlay');
+            if (overlay) overlay.style.display = 'none';
+        }
+
+        async function loadConfig() {
+            try {
+                const res = await fetch("/api/config?_=" + Date.now(), { cache: "no-store" });
+                if (!res.ok) return;
+
+                configData = await res.json();
+                const org = configData.organization;
+                if (org && org.org_name) {
+                    document.getElementById("org-name").textContent = org.org_name;
+                    document.title = org.org_name + " - Live Display";
+                }
+
+                const windows = configData.windows || [];
+                if (!windows.length) {
+                    document.getElementById("windows-info").textContent = "No windows configured yet";
+                    return;
+                }
+
+                document.getElementById("windows-info").textContent = windows.map(w => {
+                    return `${w.window_name} (${w.service_ids || "-"})`;
+                }).join("  |  ");
+            } catch (e) {
+                console.log("Config load failed", e);
+            }
+        }
+
+        function fillList(id, data, estimateMap) {
+            const list = document.getElementById(id);
+            list.innerHTML = "";
+
+            const rows = (data || []).slice(0, 8);
+            if (!rows.length) {
+                list.innerHTML = '<li><span class="meta-small">No tickets</span></li>';
+                return;
+            }
+
+            rows.forEach(item => {
+                const li = document.createElement("li");
+                if (typeof item === "object" && item !== null) {
+                    const num = escapeHtml(item.num || "-");
+                    const meta = `W${escapeHtml(String(item.window || "-"))} ${escapeHtml(item.service || "")}`;
+                    const etaLabel = estimateMap[item.num] || "";
+                    const etaHtml = etaLabel ? `<span class="eta">${escapeHtml(etaLabel)}</span>` : "";
+                    li.innerHTML = `<span>${num}</span><span class="meta-small">${meta}</span>${etaHtml}`;
+                } else {
+                    li.textContent = String(item);
+                }
+                list.appendChild(li);
+            });
+        }
+
         async function refresh() {
             try {
-                const [waiting, calling, nextbatch] = await Promise.all([
-                    fetch('/api/waiting').then(r=>r.json()),
-                    fetch('/api/calling').then(r=>r.json()),
-                    fetch('/api/nextbatch').then(r=>r.json())
+                const [waitingRes, callingRes, nextRes, insightsRes] = await Promise.all([
+                    fetch("/api/waiting"),
+                    fetch("/api/calling"),
+                    fetch("/api/nextbatch"),
+                    fetch("/api/insights")
                 ]);
-                const main = document.getElementById('main-number');
-                const num = calling.data?.[0] || '-';
-                main.textContent = num;
-                main.classList.toggle('active', num !== '-');
-                fillList('waiting-list', waiting.data || []);
-                fillList('next-list', nextbatch.data || []);
-                document.getElementById('waiting-num').textContent = waiting.data?.length || 0;
-                document.getElementById('next-num').textContent = nextbatch.data?.length || 0;
-                document.getElementById('status-time').textContent = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            } catch(e) { document.getElementById('main-number').textContent = 'OFFLINE'; }
+
+                if (!waitingRes.ok || !callingRes.ok || !nextRes.ok || !insightsRes.ok) {
+                    throw new Error("API request failed");
+                }
+
+                const [waiting, calling, nextbatch, insights] = await Promise.all([
+                    waitingRes.json(),
+                    callingRes.json(),
+                    nextRes.json(),
+                    insightsRes.json()
+                ]);
+
+                const current = calling.data && calling.data.length ? calling.data[0] : "-";
+                const main = document.getElementById("main-number");
+                const nowMeta = document.getElementById("now-meta");
+
+                if (typeof current === "object" && current !== null) {
+                    main.textContent = current.num || "-";
+                    nowMeta.textContent = `Window ${current.window || "-"} • ${current.service || "Service"}`;
+
+                    if (previousCalled !== current.num) {
+                        playChime();
+                        speakNowServing(current.num, current.window, current.service);
+                        previousCalled = current.num;
+                    }
+                    main.classList.remove("offline");
+                } else {
+                    main.textContent = String(current || "-");
+                    nowMeta.textContent = "Waiting for next call";
+                    if (main.textContent === "-") previousCalled = "";
+                }
+
+                const estimateMap = {};
+                (insights.waitEstimates || []).forEach(x => {
+                    estimateMap[x.num] = x.etaLabel;
+                });
+
+                fillList("waiting-list", waiting.data || [], estimateMap);
+                fillList("next-list", nextbatch.data || [], {});
+
+                const waitingCount = (waiting.data || []).length;
+                const nextCount = (nextbatch.data || []).length;
+                document.getElementById("waiting-pill").textContent = `Waiting ${waitingCount}`;
+                document.getElementById("next-pill").textContent = `Next ${nextCount}`;
+
+                const reco = insights.recommendation || "Flow is healthy. Keep current staffing.";
+                document.getElementById("coach-reco").textContent = `Queue Insights: ${reco}`;
+
+                document.getElementById("status-dot").style.background = "#22c55e";
+            } catch (e) {
+                document.getElementById("main-number").textContent = "OFFLINE";
+                document.getElementById("main-number").classList.add("offline");
+                document.getElementById("now-meta").textContent = "Cannot reach API server";
+                document.getElementById("status-dot").style.background = "#ef4444";
+            }
         }
-        function fillList(id, data) {
-            const list = document.getElementById(id);
-            list.innerHTML = data.slice(0, 8).map(item => `<li>${item}</li>`).join('');
-        }
+
+        document.addEventListener("keydown", (e) => {
+            if (e.code === "KeyV") {
+                voiceEnabled = !voiceEnabled;
+                document.getElementById("voice-state").textContent = `Voice: ${voiceEnabled ? "On" : "Off"}`;
+            }
+        });
+
+        loadConfig();
         refresh();
+        updateClock();
+
         setInterval(refresh, 1500);
+        setInterval(loadConfig, 5000);
+        setInterval(updateClock, 1000);
     </script>
 </body>
 </html>

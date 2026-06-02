@@ -1,0 +1,37 @@
+.generate-section {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+}
+
+.generate-section select {
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--glass);
+    backdrop-filter: blur(20px);
+    color: var(--text-primary);
+    min-width: 200px;
+    font-weight: 500;
+}
+
+.generate-section select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+}
+
+@media (max-width: 768px) {
+    .generate-section {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .generate-section select {
+        width: 100%;
+        max-width: 300px;
+    }
+}

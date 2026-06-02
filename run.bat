@@ -1,6 +1,6 @@
 @echo off
-title Smart Queue Web System v3.0
-echo Smart Queue Management System v3.0 - Web Edition
+title Smart Queue Web System v4.0
+echo Smart Queue Management System v4.0 - Web Edition
 echo =================================================
 echo Starting XAMPP MySQL? Run setup.sql in phpMyAdmin first!
 echo.
@@ -13,7 +13,7 @@ if %ERRORLEVEL% neq 0 (
 )
 echo [OK] Compiled successfully.
 echo.
-echo Starting server on http://localhost:8080/ ...
+echo Starting web server on http://localhost:8080/ ...
 java -cp ".;mysql-connector-j-9.6.0.jar" QueueApp
 echo.
 echo Server stopped. Press any key to exit.
